@@ -4,6 +4,58 @@ class Item {
     this.sellIn = sellIn;
     this.quality = quality;
   }
+
+  updateQuality() {
+    if (this.quality && this.sellIn) {
+      this.quality -= 1;
+      this.sellIn -= 1;
+    }
+  }
+}
+
+class AgedBrie extends Item {
+  constructor(sellIn, quality) {
+    super("Aged Brie", sellIn, quality);
+  }
+
+  updateQuality() {
+    if (this.quality < 50 && this.sellIn) {
+      this.quality += 1;
+      this.sellIn -= 1;
+    }
+  }
+}
+
+class Sulfuras extends Item {
+  constructor(sellIn, quality) {
+    super("Sulfuras, Hand of Ragnaros", sellIn, quality);
+  }
+
+  updateQuality() {}
+}
+
+class BackstagePass extends Item {
+  constructor(sellIn, quality) {
+    super("Backstage passes to a TAFKAL80ETC concert", sellIn, quality);
+  }
+
+  updateQuality() {
+    if (this.sellIn) {
+      if (this.sellIn > 5 && this.sellIn <= 10) {
+        this.quality += 2;
+      }
+
+      if (this.sellIn <= 5) {
+        this.quality += 3;
+      }
+
+      if (this.sellIn > 10) {
+        this.quality += 1;
+      }
+
+      this.sellIn -= 1;
+    }
+  }
 }
 
 class Shop {
@@ -11,76 +63,10 @@ class Shop {
     this.items = items;
   }
 
-  updateNormalItem({ quality, sellIn }) {
-    if (quality && sellIn) {
-      quality -= 1;
-      sellIn -= 1;
-    }
-
-    return { quality, sellIn };
-  }
-
-  updateAgedBrie({ quality, sellIn }) {
-    if (quality < 50 && sellIn) {
-      quality += 1;
-      sellIn -= 1;
-    }
-
-    return { quality, sellIn };
-  }
-
-  updateBackstagePasses({ quality, sellIn }) {
-    if (sellIn) {
-      if (sellIn > 5 && sellIn <= 10) {
-        quality += 2;
-      }
-
-      if (sellIn <= 5) {
-        quality += 3;
-      }
-
-      if (sellIn > 10) {
-        quality += 1;
-      }
-
-      sellIn -= 1;
-    }
-
-    return { quality, sellIn };
-  }
-
   updateQuality() {
     const result = this.items.map((item) => {
-      const { name, quality, sellIn } = item;
-      const normalItem =
-        [
-          "Aged Brie",
-          "Sulfuras, Hand of Ragnaros",
-          "Backstage passes to a TAFKAL80ETC concert",
-        ].includes(name) === false;
+      item.updateQuality();
 
-      if (normalItem) {
-        const { quality, sellIn } = this.updateNormalItem({ ...item });
-
-        item.quality = quality;
-        item.sellIn = sellIn;
-      }
-
-      if (name === "Aged Brie") {
-        const { quality, sellIn } = this.updateAgedBrie({ ...item });
-
-        item.quality = quality;
-        item.sellIn = sellIn;
-      }
-
-      if (name === "Backstage passes to a TAFKAL80ETC concert") {
-        const { quality, sellIn } = this.updateBackstagePasses({
-          ...item,
-        });
-
-        item.quality = quality;
-        item.sellIn = sellIn;
-      }
       return item;
     });
 
@@ -90,5 +76,8 @@ class Shop {
 
 module.exports = {
   Item,
+  AgedBrie,
+  Sulfuras,
+  BackstagePass,
   Shop,
 };
